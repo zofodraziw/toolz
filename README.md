@@ -21,15 +21,16 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            padding: 20px;
-            display: flex;
-            justify-content: center;
+            padding: 15px;
+            margin: 0;
+            /* Removed flex and center justification to prevent left-side clipping on mobile */
         }
 
         .container {
             background-color: var(--card-bg);
             max-width: 900px;
             width: 100%;
+            margin: 0 auto; /* Centers the container safely */
             border-radius: 12px;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
             padding: 30px;
@@ -47,7 +48,6 @@
         .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
 
         .section-box {
             background: var(--section-bg); border: 1px solid var(--border);
@@ -56,13 +56,13 @@
 
         h3 { font-size: 16px; margin-top: 0; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 15px; }
 
-        .input-group { display: flex; flex-direction: column; margin-bottom: 12px; }
-        .input-row { display: flex; gap: 10px; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 12px; width: 100%; }
+        .input-row { display: flex; gap: 15px; }
         .input-row > div { flex: 1; }
         
         label { font-size: 13px; font-weight: 600; margin-bottom: 5px; color: var(--text-muted); }
         input[type="number"], input[type="range"] {
-            padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px;
+            padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 16px; /* 16px prevents iOS zoom bug */
             background: var(--card-bg); color: var(--text-main); width: 100%;
         }
         input[type="number"]:focus { outline: none; border-color: var(--accent); }
@@ -80,6 +80,18 @@
         .result-row.total { font-weight: bold; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 5px; }
         .result-row.highlight { font-size: 22px; color: var(--success); font-weight: bold; margin-top: 15px; }
 
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; gap: 15px; }
+            .container { padding: 15px; }
+            h1 { font-size: 22px; }
+            
+            /* Stack the input rows vertically on mobile */
+            .input-row { flex-direction: column; gap: 0; }
+            
+            .tabs { margin-bottom: 15px; }
+            .results { position: static; margin-top: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -246,7 +258,6 @@
 </div>
 
 <script>
-    // Presets mapping our 3 phases
     const presets = {
         phoneStand: { fil1Cost: 20, fil1Weight: 100, fil2Cost: 40, fil2Weight: 15, laser1Cost: 3, laser1Frac: 0, laser2Cost: 2, laser2Frac: 0.15, magCost: 0, magQty: 0, ledCost: 0, ledQty: 0, miscHardware: 0.5, printTime: 3.5, laserTime: 0.1, machineRate: 0.5, margin: 60 },
         badgeDuo: { fil1Cost: 22, fil1Weight: 45, fil2Cost: 35, fil2Weight: 10, laser1Cost: 4, laser1Frac: 0.2, laser2Cost: 0, laser2Frac: 0, magCost: 0.25, magQty: 4, ledCost: 0, ledQty: 0, miscHardware: 1.0, printTime: 1.5, laserTime: 0.2, machineRate: 0.5, margin: 70 },
@@ -287,7 +298,6 @@
     }
 
     function calculate() {
-        // Read Inputs
         const f1C = parseFloat(document.getElementById('fil1Cost').value) || 0;
         const f1W = parseFloat(document.getElementById('fil1Weight').value) || 0;
         const f2C = parseFloat(document.getElementById('fil2Cost').value) || 0;
@@ -309,7 +319,6 @@
         const mRate = parseFloat(document.getElementById('machineRate').value) || 0;
         const margin = parseFloat(document.getElementById('margin').value) || 0;
 
-        // Math
         const costF1 = (f1W / 1000) * f1C;
         const costF2 = (f2W / 1000) * f2C;
         const totalPrint = costF1 + costF2;
@@ -327,7 +336,6 @@
         const retailPrice = primeCost / (1 - (margin / 100));
         const profit = retailPrice - primeCost;
 
-        // Update UI
         const format = (num) => '$' + num.toFixed(2);
 
         document.getElementById('outFil1').innerText = format(costF1);
@@ -347,7 +355,6 @@
         document.getElementById('outRetail').innerText = format(retailPrice);
     }
 
-    // Initialize with Phone Stand Tab
     window.onload = () => loadPreset('phoneStand');
 </script>
 
